@@ -277,6 +277,9 @@ def main(args):
 				stop_child_process("runit daemon", runit_pid)
 			wait_for_runit_services()
 
+def read_bool(value):
+	return value.lower() in ('1', 'true', 'yes', 'y') if value else False
+
 # Parse options.
 parser = argparse.ArgumentParser(description = 'Initialize the system.')
 parser.add_argument('main_command', metavar = 'MAIN_COMMAND', type = str, nargs = '*',
@@ -291,7 +294,8 @@ parser.add_argument('--skip-runit', dest = 'skip_runit',
 	action = 'store_const', const = True, default = False,
 	help = 'Do not run runit services')
 parser.add_argument('--no-kill-all-on-exit', dest = 'kill_all_on_exit',
-	action = 'store_const', const = False, default = True,
+	action = 'store_const', const = False,
+	default = not read_bool(os.getenv('NO_KILL_ON_EXIT')),
 	help = 'Don\'t kill all processes on the system upon exiting')
 parser.add_argument('--quiet', dest = 'log_level',
 	action = 'store_const', const = LOG_LEVEL_WARN, default = LOG_LEVEL_INFO,
